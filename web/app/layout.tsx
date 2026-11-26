@@ -4,6 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Priced In · Who knew first?",
+  metadataBase: new URL("https://markets.satwikmedipalli.dev"),
   description: "Kalshi odds against minute-by-minute stock prices: which stocks move with the odds, by how much, and which market moves first.",
 };
 
