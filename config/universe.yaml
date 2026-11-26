@@ -1,0 +1,118 @@
+# Contract universe. Chosen 2026-11-26 by traded volume (data/discovery.csv) and economic
+# relevance, BEFORE any stock data was pulled. Each family lists the assets tested against it.
+#
+# assets: ticker -> sector control ETF (null = market control only; SPY itself gets no controls).
+# rule_clarity: clear | ambiguous (module 3). Ambiguous contracts are still estimated but flagged.
+
+market_proxy: SPY
+
+families:
+  - id: fomc
+    kind: fomc
+    label: "FOMC decision days"
+    type: fed
+    series: [FEDDECISION, KXFEDDECISION]
+    rule_clarity: clear
+    question: "How do stocks move with the odds of a cut at the NEXT meeting, during the statement and press conference?"
+    assets: {SPY: null, KRE: null, XLF: null, XHB: null, TLT: null, IWM: null, JPM: XLF}
+
+  - id: fedchair-warsh
+    kind: unscheduled
+    source: kalshi
+    label: "Warsh nominated Fed chair"
+    type: fed
+    series: KXFEDCHAIRNOM
+    event_ticker: KXFEDCHAIRNOM-29
+    market: KXFEDCHAIRNOM-29-KW
+    rule_clarity: clear
+    assets: {SPY: null, TLT: null, KRE: null, XLF: null, GLD: null, UUP: null}
+
+  - id: fedchair-hassett
+    kind: unscheduled
+    source: kalshi
+    label: "Hassett nominated Fed chair"
+    type: fed
+    series: KXFEDCHAIRNOM
+    event_ticker: KXFEDCHAIRNOM-29
+    market: KXFEDCHAIRNOM-29-KH
+    rule_clarity: clear
+    assets: {SPY: null, TLT: null, KRE: null, XLF: null, GLD: null, UUP: null}
+
+  - id: powell-leaves-2025
+    kind: unscheduled
+    source: kalshi
+    label: "Powell leaves before 2026"
+    type: fed
+    series: KXLEAVEPOWELL
+    event_ticker: LEAVEPOWELL-25
+    market: LEAVEPOWELL-25-DEC31
+    rule_clarity: clear
+    assets: {SPY: null, TLT: null, KRE: null, GLD: null, UUP: null}
+
+  - id: recession-2025
+    kind: unscheduled
+    source: kalshi
+    label: "US recession in 2025"
+    type: growth
+    series: KXRECSSNBER
+    event_ticker: RECSSNBER-25
+    market: RECSSNBER-25
+    rule_clarity: ambiguous
+    rule_note: "Series is named for NBER, but the contract resolves on two negative BEA GDP quarters."
+    assets: {SPY: null, XLY: null, XLP: null, IWM: null, KRE: null, HYG: null}
+
+  - id: scotus-tariffs
+    kind: unscheduled
+    source: kalshi
+    label: "Supreme Court upholds Trump tariffs"
+    type: trade
+    series: KXDJTVOSTARIFFS
+    event_ticker: KXDJTVOSTARIFFS
+    market: KXDJTVOSTARIFFS
+    rule_clarity: ambiguous
+    rule_note: "'Rules in favor' leaves a split or partial ruling open to interpretation."
+    assets: {SPY: null, XRT: null, SMH: null, IWM: null, AAPL: XLK, NKE: XLY}
+
+  - id: shutdown-jan-2026
+    kind: unscheduled
+    source: kalshi
+    label: "Government shut down on Jan 31, 2026"
+    type: policy
+    series: KXGOVSHUT
+    event_ticker: KXGOVSHUT-26JAN31
+    market: KXGOVSHUT-26JAN31
+    rule_clarity: clear
+    assets: {SPY: null, ITA: null, XLV: null, IWM: null, TLT: null}
+
+  - id: house-2026
+    kind: unscheduled
+    source: kalshi
+    label: "Republicans win the House in 2026"
+    type: policy
+    series: CONTROLH
+    event_ticker: CONTROLH-2026
+    market: CONTROLH-2026-R
+    rule_clarity: clear
+    assets: {SPY: null, ITA: null, XLV: null, ICLN: null, XLE: null, IWM: null}
+
+  - id: senate-2026
+    kind: unscheduled
+    source: kalshi
+    label: "Republicans win the Senate in 2026"
+    type: policy
+    series: CONTROLS
+    event_ticker: CONTROLS-2026
+    market: CONTROLS-2026-R
+    rule_clarity: clear
+    assets: {SPY: null, ITA: null, XLV: null, ICLN: null, XLE: null, IWM: null}
+
+  - id: btc-200k-2026
+    kind: unscheduled
+    source: kalshi
+    label: "Bitcoin above $200k in 2026"
+    type: crypto
+    series: KXBTC2026200
+    event_ticker: KXBTC2026200-27JAN01
+    market: KXBTC2026200-27JAN01-200000
+    rule_clarity: clear
+    assets: {SPY: null, COIN: null, MSTR: null, MARA: null, RIOT: null}

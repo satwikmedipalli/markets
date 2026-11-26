@@ -1,0 +1,50 @@
+# Pre-registered study parameters. See PREREGISTRATION.md for the reasoning.
+# Changing anything here after `pricedin freeze` breaks the freeze hash and
+# blocks the held-out test until a new, logged freeze.
+
+window:
+  pre_min: 5          # minutes before the event time t0
+  post_min: 30        # minutes after t0
+
+session:              # US equities regular session, America/New_York
+  open: "09:30"
+  close: "16:00"
+  # t0 must satisfy open + pre_min <= t0 and t0 + post_min <= close,
+  # so no window crosses the open or the close.
+
+fomc:
+  statement_time: "14:00"     # FOMC statement release, ET
+  probability: p_cut_next     # sum of midquotes of all "cut" outcomes of the NEXT meeting
+
+jump:                 # unscheduled events, defined from contract data only
+  horizon_min: 5      # change in midquote over this many minutes
+  quantile: 0.995     # threshold = this quantile of |5-min change| over the contract's life
+  min_abs_pp: 5       # ...but never below 5 probability points
+  dedupe_min: 120     # later crossings within this many minutes belong to the same event
+
+quality:              # module 3; events failing these are excluded from betas and lead-lag
+  # Changed 2026-11-26, before any stock data was pulled (see PREREGISTRATION.md, change log):
+  # a minute with no Kalshi candle means the book did not change, so a two-sided midquote is
+  # live, not stale. Staleness is therefore judged by spread and two-sidedness, and activity
+  # becomes a floor plus a robustness split instead of an 80% rule.
+  max_median_spread_pp: 5     # median ask - bid in the window, probability points (Kalshi only)
+  min_two_sided_share: 0.90   # share of window minutes with both sides of the book quoted
+  min_active_minutes: 5       # at least this many minutes with a candle / print in the window
+  robustness_active_share: 0.50   # lead-lag is re-run on events at or above this activity share
+
+estimation:
+  market_proxy: SPY
+  bootstrap_reps: 2000
+  seed: 20261130
+  leadlag_max_lag: 5
+
+validation:
+  placebo_pool: 20           # candidate placebo days per event (bars are loaded for each)
+  placebo_draws: 500          # time-shifted placebo draws per (family, ticker)
+  shuffle_draws: 500          # shuffled event-stock pairings per (family, ticker)
+  placebo_day_offset: [5, 60] # placebo stock returns come from the same clock time 5-60 trading days away
+  holdout_share: 0.30         # most recent share of events, sealed until freeze
+  fdr_q: 0.05                 # Benjamini-Hochberg across all (family, ticker) tests
+
+decision_gate:
+  min_usable_events: 40       # below this in the training set: widen the contract set first
